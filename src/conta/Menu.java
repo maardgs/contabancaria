@@ -1,7 +1,8 @@
-package contaBancaria;
+package conta;
 
 import java.util.Scanner;
-import conta.Model.Conta;
+
+import conta.model.Conta;
 import conta.util.Cores;
 
 public class Menu {
