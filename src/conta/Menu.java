@@ -1,121 +1,169 @@
 package conta;
 
+import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import conta.util.Cores;
+import conta.controller.ContaController;
 import conta.model.ContaCorrente;
 import conta.model.ContaPoupanca;
-
 
 public class Menu {
 
 	public static void main(String[] args) {
-		// TODO projeto conta bancária.
-		
-				// Teste da Classe Conta Corrente
-				ContaCorrente cc1 = new ContaCorrente(1, 123, 1, "José da Silva", 0.0f, 1000.0f);
-				cc1.visualizar();
-				cc1.sacar(12000.0f);
-				cc1.visualizar();
-				cc1.depositar(5000.0f);
-				cc1.visualizar();
-				
-		        // Teste da Classe Conta Poupança
-				ContaPoupanca cp1 = new ContaPoupanca(2, 123, 2, "Maria dos Santos", 100000.0f, 15);
-				cp1.visualizar();
-		        cp1.sacar(1000.0f);
-				cp1.visualizar();
-				cp1.depositar(5000.0f);
-				cp1.visualizar();
-		
+		ContaController contas = new ContaController();
+
 		Scanner sc = new Scanner(System.in);
+
+		int opcao, numero, agencia, tipo, aniversario;
+		String titular;
+		float saldo, limite;
 		
-		int opcao;
+		System.out.println("\nCriar Contas\n");
+		ContaCorrente cc1 = new ContaCorrente(contas.gerarNumero(), 123, 1, "João da Silva", 1000f, 100.0f);
+		contas.cadastrar(cc1);
+		
+		ContaCorrente cc2 = new ContaCorrente(contas.gerarNumero(), 124, 1, "Maria da Silva", 2000f, 100.0f);
+		contas.cadastrar(cc2);
+		
+		ContaPoupanca cp1 = new ContaPoupanca(contas.gerarNumero(), 125, 2, "Mariana dos Santos", 4000f, 12);
+		contas.cadastrar(cp1);
+		
+		ContaPoupanca cp2 = new ContaPoupanca(contas.gerarNumero(), 126, 2, "Juliana Ramos", 8000f, 15);
+		contas.cadastrar(cp2);
+		
+		contas.listarTodas();
 		
 		while (true) {
 			System.out.println(Cores.TEXT_YELLOW + Cores.ANSI_BLACK_BACKGROUND + "****************************************");
-			System.out.println("                                        " );
-			System.out.println("       BANCO DO BRAZIL COM Z            " );
-			System.out.println("                                        " );
-			System.out.println("****************************************" );
-			System.out.println("                                        " );
-			System.out.println("       1.Criar conta                    " );
-			System.out.println("       2.Listar todas as Contas         " );
-			System.out.println("       3.Buscar conta por número        " );
-			System.out.println("       4.Atualizar dados da conta       " );
-			System.out.println("       5.Apagar conta                   " );
-			System.out.println("       6.Sacar                          " );
-			System.out.println("       7.Depositar                      " );
-			System.out.println("       8.Transferir                     " );
-			System.out.println("       9.Sair                           " );
-			System.out.println("                                        " );
-			System.out.println("****************************************" );
-			System.out.println("Entre na opção desejada:                " );
+			System.out.println("                                        ");
+			System.out.println("       BANCO DO BRAZIL COM Z            ");
+			System.out.println("                                        ");
+			System.out.println("****************************************");
+			System.out.println("                                        ");
+			System.out.println("       1.Criar conta                    ");
+			System.out.println("       2.Listar todas as Contas         ");
+			System.out.println("       3.Buscar conta por número        ");
+			System.out.println("       4.Atualizar dados da conta       ");
+			System.out.println("       5.Apagar conta                   ");
+			System.out.println("       6.Sacar                          ");
+			System.out.println("       7.Depositar                      ");
+			System.out.println("       8.Transferir                     ");
+			System.out.println("       9.Sair                           ");
+			System.out.println("                                        ");
+			System.out.println("****************************************");
+			System.out.println("Entre na opção desejada:                ");
 			System.out.println("                                        " + Cores.TEXT_RESET);
+
+			try {
+				opcao = sc.nextInt();
+				}catch(InputMismatchException e) {
+					System.out.println("\nDigite valores inteiros!");
+					sc.nextLine();
+					opcao=0;
+				}
 			
-			opcao = sc.nextInt();
-			
+
 			if (opcao == 9) {
 				System.out.println(Cores.TEXT_WHITE_BOLD + "\nBanco do Brazul com Z - O seu futuro começa aqui!");
 				sobre();
 				sc.close();
 				System.exit(0);
 			}
+
+			switch (opcao) {
+
+			case 1:
+				System.out.println(Cores.TEXT_WHITE_BOLD + "Criar Conta \n\n");
+				System.out.println("Digite o número da agência: ");
+				agencia = sc.nextInt();
+				System.out.println("Digite o nome do titular: ");
+				sc.skip("\\R?");
+				titular = sc.nextLine();
 				
-				switch (opcao) {
+				do {
+					System.out.println("Digite o tipo da conta (1-CC ou 2-CP): ");
+					tipo = sc.nextInt();
+				}while(tipo < 1 && tipo > 2);
 				
-				case 1:
-					System.out.println(Cores.TEXT_WHITE_BOLD + "Criar Conta \n\n");
+				System.out.println("Digite o saldo da conta (R$): ");
+				saldo = sc.nextFloat();
 				
+				switch(tipo) {
+					case 1 -> {
+						System.out.println("Digite o limite de crédito (R$): ");
+						limite = sc.nextFloat();
+						contas.cadastrar(new ContaCorrente (contas.gerarNumero(), agencia, tipo, titular, saldo, limite));
+					}
+					case 2 -> {
+						System.out.println("Digite o dia do aniversário da conta: ");
+						aniversario = sc.nextInt();
+						contas.cadastrar(new ContaPoupanca(contas.gerarNumero(), agencia, tipo, titular, saldo, aniversario));
+					}
+				}
+				
+				KeyPress();
 				break;
 				
-				case 2: 
-					System.out.println(Cores.TEXT_WHITE_BOLD + "Listar todas as Contas\n\n");
-				
+			case 2:
+				System.out.println(Cores.TEXT_WHITE_BOLD + "Listar todas as Contas\n\n");
+				contas.listarTodas();
+				KeyPress();
 				break;
-				
-				case 3: 
-					System.out.println(Cores.TEXT_WHITE_BOLD + "Consultar dados da Conta - por número\n\n") ;
-				
+
+			case 3:
+				System.out.println(Cores.TEXT_WHITE_BOLD + "Consultar dados da Conta - por número\n\n");
+
 				break;
-				
-				case 4:
-					System.out.println(Cores.TEXT_WHITE_BOLD + "Atualizar dados da Conta\n\n");
-				
+
+			case 4:
+				System.out.println(Cores.TEXT_WHITE_BOLD + "Atualizar dados da Conta\n\n");
+
 				break;
-				
-				case 5: 
-					System.out.println(Cores.TEXT_WHITE_BOLD + "Apagar a Conta\n\n");
-				
+
+			case 5:
+				System.out.println(Cores.TEXT_WHITE_BOLD + "Apagar a Conta\n\n");
+
 				break;
-				
-				case 6:
-					System.out.println(Cores.TEXT_WHITE_BOLD + "Saqueln\n");
-				
+
+			case 6:
+				System.out.println(Cores.TEXT_WHITE_BOLD + "Saqueln\n");
+
 				break;
-				
+
 			case 7:
 				System.out.println(Cores.TEXT_WHITE_BOLD + "Deposito\n\n");
 				break;
-				
+
 			case 8:
 				System.out.println(Cores.TEXT_WHITE_BOLD + "Transferência entre Contas\n\n");
-				
+
 				break;
-			
+
 			default:
-				System.out.println(Cores.TEXT_RED_BOLD+"\nOpção Invalidal\n");
-				
+				System.out.println(Cores.TEXT_RED_BOLD + "\nOpção Invalidal\n");
+
 			}
 		}
 	}
-			public static void sobre() {
-				System.out.println("\n****************************************");
-				System.out.println(" Projeto Desenvolvido por: ");
-				System.out.println("Generation Brasil - generation@generation.or");
-				System.out.println("github.com/conteudoGeneration");
-				System.out.println("\\n****************************************");
-			
-	}
 
+	public static void sobre() {
+		System.out.println("\n****************************************");
+		System.out.println(" Projeto Desenvolvido por: ");
+		System.out.println("Generation Brasil - generation@generation.or");
+		System.out.println("github.com/conteudoGeneration");
+		System.out.println("\\n****************************************");
+
+	}
+	
+	public static void KeyPress() {
+		try {
+			System.out.println(Cores.TEXT_RESET + "\n\nPressione Enter para Continuar...");
+			System.in.read();
+			
+		}catch (IOException e) {
+			System.out.println("Você pressionou uma tecla diferente de enter!");
+		}
+	}
 }
